@@ -35,7 +35,6 @@
     ┣ train-spm.sh              - SentencePieceモデルの訓練
     ┣ top-k.sh                  - top-kの出力
     ┣ em-make-alignment.py      - アライメント行列の作成
-    ┣ em-make-alignment.py      - アライメント行列の作成
     ┣ bs-segmentation.py        - バイリンガルサブワード分割（train, valid）
     ┣ bs-segmentation-test.py   - バイリンガルサブワード分割（test）
 ┣ alignment/
