@@ -6,7 +6,7 @@
 ## データの準備
 ```
 ┣ dataset/
-    ┣ top-k/  - データセットのtop-k
+    ┣ data/
         ┣ train/  - 学習用データ
             ┣ train.src
             ┣ train.tar
@@ -25,10 +25,15 @@
 ## フォルダ構成
 ```
 ┣ dataset/
-    ┣ top-k/
-    ┣ bs-seg/
+    ┣ data/                     - 元のデータセット
+    ┣ spm-model/                - SentencePieceモデル用
+    ┣ top-k/                    - データのtop-k
+    ┣ unigram/                  - サブワード分割されたファイル
+    ┣ bs-seg/                   - バイリンガルサブワード分割されたファイル
     ...
 ┣ scripts/
+    ┣ train-spm.sh              - SentencePieceモデルの訓練
+    ┣ top-k.sh                  - top-kの出力
     ┣ em-make-alignment.py      - アライメント行列の作成
     ┣ em-make-alignment.py      - アライメント行列の作成
     ┣ bs-segmentation.py        - バイリンガルサブワード分割（train, valid）
@@ -37,10 +42,20 @@
 ```
 
 ## 実行
+### SentencePieceモデルの訓練
+```bash
+./train-spm.sh
+```
+
+### top-kの出力
+```bash
+./top-k.sh
+```
+
 ### EMアルゴリズムを用いたアライメント行列の作成
 ```python
 python em-make-alignment.py \
-    # --input_alpha ../alignment/alpha-step=0 \       - アライメント行列の途中過程（途中で止まった時用）
+    # --input_alpha ../alignment/alpha-step=0 \        - アライメント行列の途中過程（途中で止まった時用）
     --smoothed_log_value=-1e10 \                       - アライメントlog確率の最小値
     --input_src ../dataset/top-k/train/train.src \     - 原言語の訓練データのtop-k
     --input_tar ../dataset/top-k/train/train.tar \     - 目的言語の訓練データのtop-k
