@@ -133,8 +133,7 @@ def main(args):
     output_alpha = args.output_alpha
 
     # データの入力, id2tokenファイルの出力
-    if input_alpha:
-        alpha = set_input_alpha(input_alpha)
+    alpha = set_input_alpha(input_alpha) if input_alpha else None
     X, Pu_X, U = set_input(input_src, output_id2token_src)
     Y, Pu_Y, V = set_input(input_tar, output_id2token_tar)
     N, K, L, = len(Pu_X), len(Pu_X[0]), len(Pu_Y[0])
