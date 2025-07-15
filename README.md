@@ -95,4 +95,4 @@ python bs-segmentation-test.py \
 touch ../dataset/bs-seg/test/test.tar               - 目的言語の評価データの出力ファイル
 ```
 
-(最終更新 2025/7/14)
+(最終更新 2025/7/15)
