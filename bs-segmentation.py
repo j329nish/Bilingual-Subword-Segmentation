@@ -1,6 +1,8 @@
 import numpy as np
 from tqdm import tqdm
 import argparse
+from numba import jit
+from numba.typed import List
 
 # データの入力(alpha)
 def set_alpha(input_alpha):
@@ -33,24 +35,59 @@ def set_input(input, input_id2token):
             Pu_X.append(Pu_X_i)
     return text, X, Pu_X
 
+@jit(nopython=True)
+def logsumexp(log_probs):
+    a_max = np.max(log_probs)
+    if a_max == -np.inf:
+        return -np.inf
+    s = 0.0
+    for x in log_probs:
+        s += np.exp(x - a_max)
+    return a_max + np.log(s)
+
+# 最適な文対の取得
+@jit(nopython=True)
+def Pm_single(X_n, Pu_X_n, Y_n, Pu_Y_n, alpha, MIN):
+    best_score = -np.inf
+    best_k = 0
+    best_l = 0
+    for k in range(len(X_n)):
+        for l in range(len(Y_n)):
+            X_tokens = [u for u in X_n[k] if u != -1]
+            Y_tokens = [v for v in Y_n[l] if v != -1]
+            if X_tokens and Y_tokens:
+                prod_alpha = 0.0
+                for u in X_tokens:
+                    log_probs = np.empty(len(Y_tokens), dtype=np.float64)
+                    for i in range(len(Y_tokens)):
+                        log_probs[i] = alpha[u, Y_tokens[i]]
+                    prod_alpha += logsumexp(log_probs)
+            else:
+                prod_alpha = len(X_n[k]) * MIN
+            current = Pu_X_n[k] + Pu_Y_n[l] + prod_alpha
+            if current > best_score:
+                best_score = current
+                best_k = k
+                best_l = l
+    return best_k, best_l
+
 # アライメントの計算
 def Pm(X, Pu_X, Y, Pu_Y, alpha, MIN):
     N = len(X)
     bestX, bestY = [], []
     for n in tqdm(range(N)):
-        best = [-np.inf, 0, 0]
-        for k in range(len(X[n])):
-            for l in range(len(Y[n])):
-                X_tokens = [u for u in X[n][k] if u != -1]
-                Y_tokens = [v for v in Y[n][l] if v != -1]
-                submatrix = alpha[np.ix_(X_tokens, Y_tokens)] if X_tokens and Y_tokens else np.array([])
-                num_missing = len(X[n][k]) * len(Y[n][l]) - len(X_tokens) * len(Y_tokens)
-                prod_alpha = np.sum(np.maximum(submatrix, MIN)) + num_missing * MIN
-                current = Pu_X[n][k] + Pu_Y[n][l] + prod_alpha
-                if current > best[0]:
-                    best = [current, k, l]
-        bestX.append(best[1])
-        bestY.append(best[2])
+        # numba用配列
+        X_n = List()
+        for seg in X[n]:
+            X_n.append(List(seg))
+        Y_n = List()
+        for seg in Y[n]:
+            Y_n.append(List(seg))
+
+        # 最適な文対の取得
+        best_k, best_l = Pm_single(X_n, Pu_X[n], Y_n, Pu_Y[n], alpha, MIN)
+        bestX.append(best_k)
+        bestY.append(best_l)
     return bestX, bestY
 
 # サブワード文対の出力
