@@ -21,11 +21,11 @@ def set_input(input, output_id2token):
     token2id, id2token = {}, {}
     id = 0
     # index = 0
-    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)")
+    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)\|\|\|")
     with open(input, "r", encoding="utf-8") as f:
         for line in f:
             X_i, Pu_X_i = [], []
-            matches = pattern.findall(line.strip())
+            matches = pattern.findall(line.strip() + "|||")
             for text, score in matches:
                 tokens = []
                 for token in text.strip().split():

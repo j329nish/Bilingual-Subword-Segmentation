@@ -22,11 +22,11 @@ def set_input(input, input_id2token):
             token2id[token] = id
 
     text, X, Pu_X = [], [], []
-    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)")
+    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)\|\|\|")
     with open(input, "r", encoding="utf-8") as f:
         for line in f:
             text_i, X_i, Pu_X_i = [], [], []
-            matches = pattern.findall(line.strip())
+            matches = pattern.findall(line.strip() + "|||")
             for segment_text, score in matches:
                 tokens = segment_text.strip().split()
                 text_i.append(tokens)
