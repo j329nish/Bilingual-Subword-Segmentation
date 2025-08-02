@@ -3,6 +3,7 @@ from tqdm import tqdm
 import argparse
 from numba import jit
 from numba.typed import List
+import re
 
 # データの入力(alpha)
 def set_alpha(input_alpha):
@@ -22,14 +23,16 @@ def set_input(input, input_id2token):
             token2id[token] = id
 
     text, X, Pu_X = [], [], []
+    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)")
     with open(input, "r", encoding="utf-8") as f:
         for line in f:
             text_i, X_i, Pu_X_i = [], [], []
-            items = line.strip().split('|||')
-            for i in range(0, len(items), 2):
-                text_i.append(items[i].split())
-                X_i.append([token2id.get(token, -1) for token in items[i].split()])
-                Pu_X_i.append(np.float64(items[i+1]))
+            matches = pattern.findall(line.strip())
+            for segment_text, score in matches:
+                tokens = segment_text.strip().split()
+                text_i.append(tokens)
+                X_i.append([token2id.get(token, -1) for token in tokens])
+                Pu_X_i.append(np.float64(score))
             text.append(text_i)
             X.append(X_i)
             Pu_X.append(Pu_X_i)

@@ -5,6 +5,7 @@ import argparse
 import os
 from numba import jit
 from numba.typed import List
+import re
 
 # データの入力(alpha)
 def set_input_alpha(input_alpha):
@@ -20,20 +21,21 @@ def set_input(input, output_id2token):
     token2id, id2token = {}, {}
     id = 0
     # index = 0
+    pattern = re.compile(r"(.*?)\|\|\|(-?\d+(?:\.\d+)?)")
     with open(input, "r", encoding="utf-8") as f:
         for line in f:
             X_i, Pu_X_i = [], []
-            items = line.strip().split('|||')
-            for i in range(0, len(items), 2):
+            matches = pattern.findall(line.strip())
+            for text, score in matches:
                 tokens = []
-                for token in items[i].split():
+                for token in text.strip().split():
                     if token not in token2id:
                         token2id[token] = id
                         id2token[id] = token
                         id += 1
                     tokens.append(token2id[token])
                 X_i.append(tokens)
-                Pu_X_i.append(np.float64(items[i+1]))
+                Pu_X_i.append(np.float64(score))
             X.append(X_i)
             Pu_X.append(Pu_X_i)
             # if index == 10:
@@ -87,7 +89,7 @@ def EM_algorithm(N, K, L, X, Y, Pu_X, Pu_Y, smoothed_log_value, alpha_old):
             Y_n.append(List(seg))
 
         # Mステップ
-        M_step(lenK, lenL, X_n, Y_n, numerators, denominators_n, alpha_new)
+        alpha_new = M_step(lenK, lenL, X_n, Y_n, numerators, denominators_n, alpha_new)
 
     # alpha_newの更新
     finite_mask = np.isfinite(alpha_new)
