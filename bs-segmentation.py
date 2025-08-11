@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 import argparse
-from numba import jit
+from numba import jit, types
 from numba.typed import List
 import re
 
@@ -82,10 +82,16 @@ def Pm(X, Pu_X, Y, Pu_Y, alpha, MIN):
         # numba用配列
         X_n = List()
         for seg in X[n]:
-            X_n.append(List(seg))
+            inner_list_x = List.empty_list(types.int64)
+            for item in seg:
+                inner_list_x.append(item)
+            X_n.append(inner_list_x)
         Y_n = List()
         for seg in Y[n]:
-            Y_n.append(List(seg))
+            inner_list_y = List.empty_list(types.int64)
+            for item in seg:
+                inner_list_y.append(item)
+            Y_n.append(inner_list_y)
 
         # 最適な文対の取得
         best_k, best_l = Pm_single(X_n, Pu_X[n], Y_n, Pu_Y[n], alpha, MIN)

@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import argparse
 import os
-from numba import jit
+from numba import jit, types
 from numba.typed import List
 import re
 
@@ -83,10 +83,16 @@ def EM_algorithm(N, K, L, X, Y, Pu_X, Pu_Y, smoothed_log_value, alpha_old):
         # numba用配列
         X_n = List()
         for seg in X[n]:
-            X_n.append(List(seg))
+            inner_list_x = List.empty_list(types.int64)
+            for item in seg:
+                inner_list_x.append(item)
+            X_n.append(inner_list_x)
         Y_n = List()
         for seg in Y[n]:
-            Y_n.append(List(seg))
+            inner_list_y = List.empty_list(types.int64)
+            for item in seg:
+                inner_list_y.append(item)
+            Y_n.append(inner_list_y)
 
         # Mステップ
         alpha_new = M_step(lenK, lenL, X_n, Y_n, numerators, denominators_n, alpha_new)
