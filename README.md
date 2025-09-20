@@ -1,4 +1,4 @@
-# バイリンガルサブワード分割
+# バイリンガルサブワード分割 [[POSTER](https://github.com/j329nish/Bilingual-Subword-Segmentation/blob/main/yans2025_%E8%A5%BF%E7%94%B0_v4.pdf)]
 ## 概要
 「アライメントを用いたバイリンガルサブワード分割」の研究に関するコード群です。<br>
 以下に示すファイル構成は使用例を示しているだけなので、必要なファイルは各自作成してください。
