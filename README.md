@@ -42,7 +42,6 @@
     ┣ top-k.sh                      - top-kの出力
     ┣ em-make-alignment.py          - アライメント行列の作成
     ┣ bs-segmentation.py            - バイリンガルサブワード分割（train, valid）
-    ┣ bs-segmentation-viterbi.py    - バイリンガルサブワード分割（train, valid）by viterbi
     ┣ bs-segmentation-test.py       - バイリンガルサブワード分割（test）
 ┣ alignment/
 ```
@@ -82,16 +81,6 @@ python bs-segmentation.py \
     --output_src ../dataset/bs-seg/train/train.src \  - 原言語の訓練/検証データの出力ファイル
     --output_tar ../dataset/bs-seg/train/train.tar    - 目的言語の訓練/検証データの出力ファイル
 
-# viterbi版
-python bs-segmentation-viterbi.py \
-    --input_src ../dataset/top-k/train/train.src \    - 原言語の訓練/検証データのtop-k
-    --input_tar ../dataset/top-k/train/train.tar \    - 目的言語の訓練/検証データのtop-k
-    --input_id2token_src ../alignment/id2token.src \  - 原言語のidとトークン辞書
-    --input_id2token_tar ../alignment/id2token.tar \  - 目的言語のidとトークン辞書
-    --input_alpha ../alignment/alpha-epoch=0.txt \    - アライメント行列
-    --output_src ../dataset/bs-seg/train/train.src \  - 原言語の訓練/検証データの出力ファイル
-    --output_tar ../dataset/bs-seg/train/train.tar    - 目的言語の訓練/検証データの出力ファイル
-
 # 評価データ用
 python bs-segmentation-test.py \
     --input ../dataset/top-k/test/test.src \        - 原言語の評価データのtop-k
@@ -101,4 +90,4 @@ python bs-segmentation-test.py \
 touch ../dataset/bs-seg/test/test.tar               - 目的言語の評価データの出力ファイル
 ```
 
-(最終更新 2025/9/20)
+(最終更新 2026/2/8)
